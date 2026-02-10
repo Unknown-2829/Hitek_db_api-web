@@ -35,7 +35,7 @@
         <!-- Base URL -->
         <div class="docs-section" id="get-api">
             <h2>🌐 Base URL</h2>
-            <pre>https://your-api-domain.com</pre>
+            <pre>https://api.unknowns.app</pre>
             <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">
                 Replace with your VPS domain or IP where the API is running.
             </p>
@@ -132,13 +132,13 @@
             <h2>💻 Usage Examples</h2>
 
             <h3>cURL</h3>
-            <pre>curl "https://your-api-domain.com/api/lookup?number=9876543210"</pre>
+            <pre>curl "https://api.unknowns.app/api/lookup?number=9876543210"</pre>
 
             <h3>Python</h3>
             <pre>import requests
 
 resp = requests.get(
-    "https://your-api-domain.com/api/lookup",
+    "https://api.unknowns.app/api/lookup",
     params={"number": "9876543210"}
 )
 data = resp.json()
@@ -148,7 +148,7 @@ for phone in data['phones']:
 
             <h3>JavaScript (fetch)</h3>
             <pre>const resp = await fetch(
-  'https://your-api-domain.com/api/lookup?number=9876543210'
+  'https://api.unknowns.app/api/lookup?number=9876543210'
 );
 const data = await resp.json();
 console.log(`Found ${data.total_records} records`);
