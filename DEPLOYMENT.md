@@ -7,169 +7,101 @@ This guide covers how to host the **HiTek OSINT** API on a VPS and the frontend 
 ## 🛠 Prerequisites
 
 1.  **VPS** (Ubuntu 20.04+ recommended) with Python 3.10+ installed.
-2.  **Domain Name** (e.g., `hitek-osint.com`) pointing to your VPS IP.
-3.  **Cloudflare Account** for hosting the frontend.
-4.  **GitHub Account** to fork this repository.
+2.  **Cloudflare Account** for hosting the frontend.
+3.  **GitHub Account** to fork this repository.
 
 ---
 
 ## 🏗 Part 1: API Setup (VPS)
 
 ### 1. Connect to VPS
-SSH into your server:
+SSH into your server (using the IP from your screenshot):
 ```bash
-ssh root@your-vps-ip
+ssh root@20.204.232.146
 ```
 
-### 2. Prepare System & Database
-Make sure you have your 1.78B row `users.db` file ready. Let's assume it's at `/data/users.db`.
-
+### 2. Setup Code & Env
 ```bash
-# Update system
-apt update && apt upgrade -y
-apt install python3-pip python3-venv git nginx -y
-
-# Create directory for DB (if not exists)
-mkdir -p /data
-# (Upload your users.db to /data/users.db using SCP or SFTP)
-```
-
-### 3. Clone Repository
-```bash
-cd /opt
+# Clone the repo
 git clone https://github.com/Unknown-2829/Hitek_db_api-web.git
 cd Hitek_db_api-web
-```
 
-### 4. Setup Python Environment
-```bash
-# Create virtual environment
+# Setup Python
 python3 -m venv venv
 source venv/bin/activate
-
-# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 5. Test the API
-Run manually to check if it works:
-```bash
-export DB_PATH="/data/users.db"
-export API_PORT=8000
-python -m api.main
-```
-If it says "Application startup complete", press `Ctrl+C` to stop.
-
-### 6. Setup Systemd Service (Keep it running)
-Create a service file:
-```bash
-nano /etc/systemd/system/hitek-api.service
-```
-
-Paste this content (adjust paths if needed):
-```ini
-[Unit]
-Description=HiTek OSINT API
-After=network.target
-
-[Service]
-User=root
-WorkingDirectory=/opt/Hitek_db_api-web
-Environment="DB_PATH=/data/users.db"
-Environment="API_PORT=8000"
-Environment="PATH=/opt/Hitek_db_api-web/venv/bin"
-ExecStart=/opt/Hitek_db_api-web/venv/bin/python -m api.main
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-```
-
-Start and enable the service:
-```bash
-systemctl daemon-reload
-systemctl start hitek-api
-systemctl enable hitek-api
-```
-
-### 7. Setup Nginx (Reverse Proxy & SSL)
-Allow Nginx to forward requests to port 8000.
+### 3. Start the API (Easiest Way)
+We included a helper script `run.sh`:
 
 ```bash
+chmod +x run.sh
+./run.sh
+```
+*Make sure your `users.db` is at `/data/users.db`. If not, edit `run.sh`.*
+
+### 4. Expose to Web (Nginx)
+Since you opened Port 80, let's use Nginx to safely forward traffic to the API.
+
+```bash
+# Install Nginx
+apt install nginx -y
+
+# Configure using our example
+cp nginx.conf.example /etc/nginx/sites-available/hitek_api
 nano /etc/nginx/sites-available/hitek_api
+# CHANGE 'server_name' to: 20.204.232.146
 ```
 
-Paste this configuration:
-```nginx
-server {
-    listen 80;
-    server_name api.yourdomain.com;  # Replace with your API domain
-
-    location / {
-        proxy_pass http://127.0.0.1:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-```
-
-Enable site and restart Nginx:
+Enable it:
 ```bash
 ln -s /etc/nginx/sites-available/hitek_api /etc/nginx/sites-enabled/
-nginx -t
+rm /etc/nginx/sites-enabled/default
 systemctl restart nginx
 ```
 
-**🔒 Optional: Free SSL (HTTPS) with Certbot**
-```bash
-apt install certbot python3-certbot-nginx -y
-certbot --nginx -d api.yourdomain.com
-```
-
-✅ **Your API is now live at:** `https://api.yourdomain.com`
+✅ **API is live at:** `http://20.204.232.146`
 
 ---
 
 ## 🌐 Part 2: Frontend Setup (Cloudflare Pages)
 
-### 1. Prepare Configuration
-1.  Open `website/app.js` in your local repo.
-2.  Find this line at the top:
+### 1. Update Frontend Config (IMPORTANT)
+Since your API is HTTP (IP only), you must tell the frontend where to look.
+
+1.  Edit `website/app.js` locally.
+2.  Change `API_BASE` to your IP:
     ```javascript
-    const API_BASE = window.location.hostname === 'localhost' ...
-        ? 'http://localhost:8000'
-        : 'https://your-api-domain.com';  // <-- CHANGE THIS
+    const API_BASE = 'http://20.204.232.146';
     ```
-3.  Replace `'https://your-api-domain.com'` with your actual API URL (e.g., `'https://api.hitek-osint.com'`).
-4.  Commit and push this change to GitHub.
+3.  **Commit and push** this change to GitHub.
 
-### 2. Deploy on Cloudflare
-1.  Log in to [Cloudflare Dashboard](https://dash.cloudflare.com/).
-2.  Go to **Compute (Workers & Pages)** > **Create Application**.
-3.  Select **Pages** > **Connect to Git**.
-4.  Select your repo (`Hitek_db_api-web`).
-5.  **Build Settings:**
-    *   **Framework Preset:** `None` (it's a static HTML site)
-    *   **Build Command:** (Leave empty)
-    *   **Build Output Directory:** `website`  <-- IMPORTANT!
-6.  Click **Save and Deploy**.
+### 2. Cloudflare Build Settings
+1.  Go to **Cloudflare Dashboard** > **Pages** > **Connect to Git**.
+2.  Select `Hitek_db_api-web`.
+3.  **Use these settings:**
+    *   **Framework Preset:** `None`
+    *   **Build Command:** `(Leave Empty)`
+    *   **Build Output Directory:** `website`
+    *   **Root Directory:** `(Leave Empty)`
 
-Cloudflare will build and deploy your site in seconds.
-
-✅ **Your Website is live at:** `https://hitek-db-api-web.pages.dev` (or add your custom domain in Cloudflare settings).
+4.  Click **Save and Deploy**.
 
 ---
 
-## 🔄 Updates
+## ⚠️ Critical: Mixed Content Warning
+Cloudflare Pages uses **HTTPS** (Secure).
+Your IP API is **HTTP** (Not Secure).
 
-To update the frontend:
-- Just push changes to GitHub. Cloudflare updates automatically.
+Browsers will block the request ("Mixed Content Error").
 
-To update the API:
-```bash
-cd /opt/Hitek_db_api-web
-git pull
-systemctl restart hitek-api
-```
+**Solution:**
+1.  **Buy a domain** (e.g., `hitek-api.com`).
+2.  **Point it** to `20.204.232.146`.
+3.  **Run Certbot** on VPS:
+    ```bash
+    apt install certbot python3-certbot-nginx -y
+    certbot --nginx -d hitek-api.com
+    ```
+4.  Update `website/app.js` to `https://hitek-api.com`.
