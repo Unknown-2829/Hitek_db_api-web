@@ -24,8 +24,9 @@ function showToast(message, type = 'info', duration = 4000) {
 
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
+    var icon = toastIcons[type] || toastIcons.info;
     toast.innerHTML =
-        '<span class="toast-icon">' + (toastIcons[type] || toastIcons.info) + '</span>' +
+        '<span class="toast-icon">' + escHtml(icon) + '</span>' +
         '<span class="toast-message">' + escHtml(message) + '</span>' +
         '<button class="toast-close" aria-label="Close">&times;</button>';
 
@@ -308,7 +309,7 @@ function cleanAddress(raw) {
     if (!reveals.length) return;
 
     var observer = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry, idx) {
+        entries.forEach(function (entry) {
             if (entry.isIntersecting) {
                 // Stagger the animation for sibling elements
                 var siblings = Array.from(entry.target.parentElement.querySelectorAll('.reveal'));
