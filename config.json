@@ -1,0 +1,10 @@
+{
+    "BOT_TOKEN": "",
+    "ADMIN_IDS": "2093874577",
+    "DB_PATH": "/data/users.db",
+    "RATE_LIMIT": 2,
+    "BOT_MODE": "private",
+    "LOG_FILE": "search_history.log",
+    "USERS_FILE": "users_data.json",
+    "MAX_RESULTS": 25
+}
