@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation — HiTek OSINT</title>
+    <meta name="description"
+        content="HiTek OSINT API documentation. GET /api/lookup endpoint for mobile number intelligence.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html" class="nav-brand">HiTek<span>OSINT</span></a>
+        <button class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+        <ul class="nav-links">
+            <li><a href="index.html">Search</a></li>
+            <li><a href="docs.html" class="active">API Docs</a></li>
+            <li><a href="https://github.com/Unknown-2829/Hitek_db_api-web" target="_blank">GitHub</a></li>
+            <li><a href="#get-api" class="btn-nav">Get API</a></li>
+        </ul>
+    </nav>
+
+    <section class="docs-page">
+        <h1>API Documentation</h1>
+        <p class="subtitle">Public REST API for mobile number intelligence lookup.</p>
+
+        <!-- Base URL -->
+        <div class="docs-section" id="get-api">
+            <h2>🌐 Base URL</h2>
+            <pre>https://your-api-domain.com</pre>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">
+                Replace with your VPS domain or IP where the API is running.
+            </p>
+        </div>
+
+        <!-- Lookup Endpoint -->
+        <div class="docs-section">
+            <h2>🔍 Lookup Endpoint</h2>
+
+            <div class="endpoint-card">
+                <span class="endpoint-method">GET</span>
+                <span class="endpoint-path">/api/lookup?number={mobile}</span>
+                <p class="endpoint-desc">Search a mobile number with deep-link analysis across all connected records.
+                </p>
+            </div>
+
+            <h3>Parameters</h3>
+            <table class="param-table">
+                <thead>
+                    <tr>
+                        <th>Param</th>
+                        <th>Type</th>
+                        <th>Required</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>number</code></td>
+                        <td>string</td>
+                        <td>Yes</td>
+                        <td>10-digit Indian mobile. Auto-cleans +91, 0 prefixes.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Example Request</h3>
+            <pre>GET /api/lookup?number=9876543210</pre>
+
+            <h3>Example Response</h3>
+            <pre>{
+  "query": "9876543210",
+  "found": true,
+  "total_records": 4,
+  "total_phones": 3,
+  "phones": [
+    "9876543210",
+    "8817342793",
+    "7000419892"
+  ],
+  "names": ["Arun Kumar Patel"],
+  "father_names": ["Sarita Patel"],
+  "emails": [],
+  "addresses": [
+    "W/O Arun Kumar, Rewa, Madhya Pradesh, 486340",
+    "Ward no. 7, Korawara, Satna, MP, 485661"
+  ],
+  "regions": ["AIRTEL MP", "JIO MP"],
+  "response_time_ms": 156
+}</pre>
+
+            <h3>Error Response (400)</h3>
+            <pre>{
+  "detail": {
+    "error": "Invalid number",
+    "message": "Please provide a valid 10-digit Indian mobile number.",
+    "example": "9876543210"
+  }
+}</pre>
+        </div>
+
+        <!-- Stats Endpoint -->
+        <div class="docs-section">
+            <h2>📊 Stats Endpoint</h2>
+
+            <div class="endpoint-card">
+                <span class="endpoint-method">GET</span>
+                <span class="endpoint-path">/api/stats</span>
+                <p class="endpoint-desc">Get database statistics and health info.</p>
+            </div>
+
+            <h3>Example Response</h3>
+            <pre>{
+  "total_records": 1780000000,
+  "database_size": "156.2 GB",
+  "engine": "SQLite WAL",
+  "cache": "64MB",
+  "mmap": "2GB"
+}</pre>
+        </div>
+
+        <!-- Usage Examples -->
+        <div class="docs-section">
+            <h2>💻 Usage Examples</h2>
+
+            <h3>cURL</h3>
+            <pre>curl "https://your-api-domain.com/api/lookup?number=9876543210"</pre>
+
+            <h3>Python</h3>
+            <pre>import requests
+
+resp = requests.get(
+    "https://your-api-domain.com/api/lookup",
+    params={"number": "9876543210"}
+)
+data = resp.json()
+print(f"Found: {data['total_records']} records")
+for phone in data['phones']:
+    print(f"  📞 {phone}")</pre>
+
+            <h3>JavaScript (fetch)</h3>
+            <pre>const resp = await fetch(
+  'https://your-api-domain.com/api/lookup?number=9876543210'
+);
+const data = await resp.json();
+console.log(`Found ${data.total_records} records`);
+data.phones.forEach(p => console.log(`📞 ${p}`));</pre>
+        </div>
+
+        <!-- Self-Hosting -->
+        <div class="docs-section">
+            <h2>🚀 Self-Hosting</h2>
+            <pre># Clone the repo
+git clone https://github.com/Unknown-2829/Hitek_db_api-web.git
+cd Hitek_db_api-web
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Set database path
+export DB_PATH="/data/users.db"
+
+# Start the API server
+python -m api.main</pre>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">
+                The API runs on port 8000 by default. Configure via environment variables.
+            </p>
+
+            <h3>Environment Variables</h3>
+            <table class="param-table">
+                <thead>
+                    <tr>
+                        <th>Variable</th>
+                        <th>Default</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>DB_PATH</code></td>
+                        <td>/data/users.db</td>
+                        <td>SQLite database path</td>
+                    </tr>
+                    <tr>
+                        <td><code>API_HOST</code></td>
+                        <td>0.0.0.0</td>
+                        <td>Bind address</td>
+                    </tr>
+                    <tr>
+                        <td><code>API_PORT</code></td>
+                        <td>8000</td>
+                        <td>Port number</td>
+                    </tr>
+                    <tr>
+                        <td><code>CORS_ORIGINS</code></td>
+                        <td>*</td>
+                        <td>Comma-separated origins</td>
+                    </tr>
+                    <tr>
+                        <td><code>DEEP_SEARCH_DEPTH</code></td>
+                        <td>3</td>
+                        <td>Max BFS hops</td>
+                    </tr>
+                    <tr>
+                        <td><code>MAX_RESULTS</code></td>
+                        <td>25</td>
+                        <td>Max rows per query</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Rate Limiting -->
+        <div class="docs-section">
+            <h2>⚠️ Notes</h2>
+            <ul style="color: var(--text-secondary); font-size: 0.9rem; padding-left: 1.2rem; line-height: 2;">
+                <li>No authentication required — API is fully public</li>
+                <li>Numbers are auto-cleaned: <code>+91 98765 43210</code> → <code>9876543210</code></li>
+                <li>Deep-link search follows alt_mobile chains using indexed lookups only</li>
+                <li>Each hop is O(log n) on the indexed mobile column (~100ms)</li>
+                <li>Total deep search: ~300-500ms for 3 hops</li>
+                <li>Interactive API docs available at <code>/docs</code> (Swagger UI)</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>HiTek OSINT — <a href="https://github.com/Unknown-2829/Hitek_db_api-web" target="_blank">GitHub</a> · Built
+            for OSINT research</p>
+    </footer>
+
+</body>
+
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HiTek OSINT — Mobile Intelligence Lookup</title>
+    <meta name="description" content="Professional OSINT mobile number lookup API. Deep-link intelligence across 1.78 billion records.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+    <a href="index.html" class="nav-brand">HiTek<span>OSINT</span></a>
+    <button class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+    <ul class="nav-links">
+        <li><a href="index.html" class="active">Search</a></li>
+        <li><a href="docs.html">API Docs</a></li>
+        <li><a href="https://github.com/Unknown-2829/Hitek_db_api-web" target="_blank">GitHub</a></li>
+        <li><a href="docs.html#get-api" class="btn-nav">Get API</a></li>
+    </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-badge">⚡ 1.78 BILLION RECORDS</div>
+    <h1>HiTek OSINT</h1>
+    <p>Deep-link mobile intelligence. Search any Indian mobile number and discover all linked identities, addresses, and connections.</p>
+
+    <!-- Search -->
+    <div class="search-container">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Enter 10-digit mobile..." maxlength="15" autocomplete="off">
+            <button id="searchBtn" onclick="doSearch()">SEARCH</button>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-value">1.78B</div>
+            <div class="stat-label">Records</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="responseTime">~100ms</div>
+            <div class="stat-label">Avg Response</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">3-Hop</div>
+            <div class="stat-label">Deep Link</div>
+        </div>
+    </div>
+</section>
+
+<!-- Results -->
+<section class="results-section">
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Running deep-link analysis...</p>
+    </div>
+
+    <div class="error-msg" id="errorMsg"></div>
+
+    <div class="results-card" id="resultsCard">
+        <div class="results-header">
+            <h3 id="resultsTitle">TARGET LOCATED</h3>
+            <span class="results-time" id="resultsTime"></span>
+        </div>
+        <div class="results-body" id="resultsBody"></div>
+        <div class="results-footer">
+            <span id="resultsStats"></span>
+            <span>⚡ HiTek OSINT</span>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="features">
+    <h2>Why HiTek OSINT?</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🔍</div>
+            <h3>Deep-Link Intelligence</h3>
+            <p>Follows alt_mobile chains up to 3 hops deep, uncovering all connected identities.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Instant Lookups</h3>
+            <p>Indexed search on 1.78B rows. Results in ~100ms using optimized SQLite with WAL mode.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🌐</div>
+            <h3>Public REST API</h3>
+            <p>Simple GET endpoint. No auth required. JSON response. CORS enabled for any frontend.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Consolidated Profiles</h3>
+            <p>All phones, names, addresses, and regions merged into a single intelligence report.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🛡️</div>
+            <h3>Auto Number Cleaning</h3>
+            <p>Handles +91, 091, 0 prefixes automatically. Just paste any format — we clean it.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📖</div>
+            <h3>Open Source</h3>
+            <p>Full source on GitHub. Self-host the API on your own VPS with your own database.</p>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <h2>Get Started</h2>
+    <p style="color: var(--text-secondary); max-width: 400px; margin: 0 auto;">Use the API directly or explore the documentation to integrate into your tools.</p>
+    <div class="cta-buttons">
+        <a href="docs.html" class="btn btn-primary">📖 API Documentation</a>
+        <a href="https://github.com/Unknown-2829/Hitek_db_api-web" class="btn btn-outline" target="_blank">⭐ GitHub Repo</a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <p>HiTek OSINT — <a href="https://github.com/Unknown-2829/Hitek_db_api-web" target="_blank">GitHub</a> · Built for OSINT research</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

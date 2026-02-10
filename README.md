@@ -1,115 +1,142 @@
-# ⚡ HiTek DB Telegram Bot
+# HiTek DB — API & Web
 
-High-performance Telegram bot built with **aiogram 3.x** for querying a **1.78 Billion row** SQLite database instantly.
+Public REST API and web interface for mobile number intelligence lookup against a **1.78 billion record** database.
 
-## ✨ Features
+![License](https://img.shields.io/badge/license-MIT-green)
+![Python](https://img.shields.io/badge/python-3.10+-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-teal)
 
-| Feature | Description |
-|---------|-------------|
-| 🔍 **Instant Mobile Search** | O(log n) indexed lookup — sub-second on 1.78B rows |
-| 👤 **Multi-field Search** | Search by name, email, address, or father's name |
-| 🎨 **OSINT-Style Output** | Clean monospace formatting, easy to copy |
-| ⚡ **Async Non-blocking** | `aiosqlite` + async I/O — bot never freezes |
-| 🔒 **Access Control** | Private/Public mode, admin-only commands |
-| 🛡️ **Anti-Flood** | Rate limiting (1 search / 2 seconds per user) |
-| 📝 **Search Logging** | Every query logged to `search_history.log` |
-| 📊 **Statistics** | Real-time search count, user tracking, uptime |
-| 📡 **Broadcast** | Send alerts to all tracked users |
-| 🚫 **Ban System** | Ban/unban users with persistent storage |
-| 🔄 **Auto-Retry** | Retries on DB lock with exponential backoff |
+---
 
-## 🚀 Quick Setup
+## 🔍 What It Does
 
-### 1. Clone & Install
+- **Mobile number lookup** against 1.78B indexed records
+- **Deep-link search** — follows `alt_mobile` chains up to 3 hops
+- Returns **consolidated profiles** with all linked phones, names, addresses, regions
+- Every query uses indexed lookups — **~100ms per hop**
+
+---
+
+## 🌐 API Endpoints
+
+### `GET /api/lookup?number={mobile}`
+
+Look up a mobile number with deep-link analysis.
+
+**Parameters:**
+| Param | Type | Required | Description |
+|-------|------|----------|-------------|
+| `number` | string | Yes | 10-digit Indian mobile. Auto-cleans +91, 0 prefixes. |
+
+**Example:**
+```bash
+curl "http://your-server:8000/api/lookup?number=9876543210"
+```
+
+**Response:**
+```json
+{
+  "query": "9876543210",
+  "found": true,
+  "total_records": 4,
+  "total_phones": 3,
+  "phones": ["9876543210", "8817342793", "7000419892"],
+  "names": ["Arun Kumar Patel"],
+  "father_names": ["Sarita Patel"],
+  "emails": [],
+  "addresses": ["W/O Arun Kumar, Rewa, MP, 486340"],
+  "regions": ["AIRTEL MP", "JIO MP"],
+  "response_time_ms": 156
+}
+```
+
+### `GET /api/stats`
+
+Database statistics.
+
+### `GET /docs`
+
+Interactive Swagger UI documentation.
+
+---
+
+## 🚀 Self-Hosting (API on VPS)
 
 ```bash
-git clone https://github.com/yourusername/hitek-db-tg-bot.git
-cd hitek-db-tg-bot
+# Clone
+git clone https://github.com/Unknown-2829/Hitek_db_api-web.git
+cd Hitek_db_api-web
+
+# Install
 pip install -r requirements.txt
+
+# Configure
+export DB_PATH="/data/users.db"
+
+# Run
+python -m api.main
 ```
 
-### 2. Configure
+The API will start on `http://0.0.0.0:8000`.
 
-```bash
-cp .env.example .env
-nano .env
-```
+### Environment Variables
 
-Edit `.env`:
-```env
-BOT_TOKEN=your_telegram_bot_token
-ADMIN_IDS=123456789,987654321
-DB_PATH=/data/users.db
-RATE_LIMIT=2
-BOT_MODE=private
-```
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `DB_PATH` | `/data/users.db` | SQLite database path |
+| `API_HOST` | `0.0.0.0` | Bind address |
+| `API_PORT` | `8000` | Port |
+| `CORS_ORIGINS` | `*` | Comma-separated allowed origins |
+| `DEEP_SEARCH_DEPTH` | `3` | Max BFS hops |
+| `MAX_RESULTS` | `25` | Max rows per query |
 
-### 3. Run
+---
 
-```bash
-python main.py
-```
+## 🌍 Website (Static)
 
-## 📖 User Commands
+The `website/` folder contains a static site you can host on **Cloudflare Pages**, **GitHub Pages**, **Render**, or any static host.
 
-| Command | Description |
-|---------|-------------|
-| `/start` | Welcome message with usage guide |
-| `/help` | List all user commands |
-| `/search <query>` | Search by mobile or name (auto-detect) |
-| `/email <query>` | Search by email |
-| `/addr <query>` | Search by address |
-| `/fname <query>` | Search by father's name |
-| `/stats` | Bot statistics |
-| *direct text* | Send a number → mobile search, text → name search |
+Files:
+- `index.html` — Search interface
+- `docs.html` — API documentation
+- `style.css` — Dark OSINT theme
+- `app.js` — Frontend logic
 
-## 🔐 Admin Commands
+**To configure:** Edit `API_BASE` in `app.js` to point to your VPS API URL.
 
-| Command | Description |
-|---------|-------------|
-| `/admin` | Show admin command list |
-| `/logs` | Download search history log |
-| `/dbstats` | Database row count and file size |
-| `/alert <msg>` | Broadcast message to all users |
-| `/clearlog` | Clear search log file |
-| `/setmode <mode>` | Set bot to `public` or `private` |
-| `/getmode` | Show current bot mode |
-| `/users` | Show tracked user count |
-| `/ban <id>` | Ban a user by ID |
-| `/unban <id>` | Unban a user |
-| `/banlist` | List all banned users |
+---
 
-## 🏗️ Project Structure
+## 📁 Project Structure
 
 ```
-hitek-db-tg-bot/
-├── main.py              # Entry point
-├── requirements.txt     # Dependencies
-├── .env.example         # Environment template
-├── .gitignore
-├── README.md
-└── bot/
-    ├── __init__.py
-    ├── config.py        # Settings loader
-    ├── database.py      # Async SQLite manager
-    ├── formatters.py    # OSINT-style output
-    ├── middlewares.py   # Rate limit + access control
-    ├── state.py         # Bot mode persistence
-    ├── user_store.py    # User/ban list persistence
-    └── handlers/
-        ├── __init__.py
-        ├── user.py      # User commands
-        └── admin.py     # Admin commands
+├── api/
+│   ├── __init__.py
+│   ├── config.py      # Environment config
+│   ├── database.py    # SQLite + deep-link search
+│   └── main.py        # FastAPI server
+├── website/
+│   ├── index.html     # Search page
+│   ├── docs.html      # API docs page
+│   ├── style.css      # Styling
+│   └── app.js         # Frontend JS
+├── requirements.txt
+└── README.md
 ```
 
-## ⚡ Performance Notes
+---
 
-- **Mobile search**: Uses `idx_mobile` index → ~100ms on 1.78B rows
-- **Name/Email/Address**: Full-table `LIKE` scan → slower, limited to 25 results
-- **WAL mode**: Allows concurrent reads without blocking
-- **64MB cache + 2GB mmap**: Optimized for large dataset
-- **Async**: All DB queries run in a thread pool via `aiosqlite`
+## 🔧 Tech Stack
+
+| Component | Technology |
+|-----------|-----------|
+| API | FastAPI + Uvicorn |
+| Database | SQLite (WAL mode, 64MB cache, 2GB mmap) |
+| Search | BFS deep-link on indexed `mobile` column |
+| Frontend | Vanilla HTML/CSS/JS |
+| Fonts | Inter + JetBrains Mono |
+
+---
 
 ## 📜 License
 
-MIT
+MIT — Use freely for OSINT research.
