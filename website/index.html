@@ -11,6 +11,12 @@
 </head>
 <body>
 
+<!-- Toast Notifications -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Particles Background -->
+<canvas class="particles-canvas" id="particlesCanvas"></canvas>
+
 <!-- Navigation -->
 <nav class="navbar">
     <a href="index.html" class="nav-brand">Phantom<span>OSINT</span></a>
@@ -86,32 +92,32 @@
 <section class="features">
     <h2>Why Phantom OSINT?</h2>
     <div class="features-grid">
-        <div class="feature-card">
+        <div class="feature-card reveal">
             <div class="feature-icon">🔍</div>
             <h3>Deep-Link Intelligence</h3>
             <p>Follows alt_mobile chains up to 3 hops deep, uncovering all connected identities.</p>
         </div>
-        <div class="feature-card">
+        <div class="feature-card reveal">
             <div class="feature-icon">⚡</div>
             <h3>Instant Lookups</h3>
             <p>Indexed search on 1.78B rows. Results in ~100ms using optimized SQLite with WAL mode.</p>
         </div>
-        <div class="feature-card">
+        <div class="feature-card reveal">
             <div class="feature-icon">🌐</div>
             <h3>Public REST API</h3>
             <p>Simple GET endpoint. No auth required. JSON response. CORS enabled for any frontend.</p>
         </div>
-        <div class="feature-card">
+        <div class="feature-card reveal">
             <div class="feature-icon">📊</div>
             <h3>Consolidated Profiles</h3>
             <p>All phones, names, addresses, and regions merged into a single intelligence report.</p>
         </div>
-        <div class="feature-card">
+        <div class="feature-card reveal">
             <div class="feature-icon">🛡️</div>
             <h3>Auto Number Cleaning</h3>
             <p>Handles +91, 091, 0 prefixes automatically. Just paste any format — we clean it.</p>
         </div>
-        <div class="feature-card">
+        <div class="feature-card reveal">
             <div class="feature-icon">📖</div>
             <h3>Open Source</h3>
             <p>Full source on GitHub. Self-host the API on your own VPS with your own database.</p>
@@ -124,8 +130,8 @@
     <h2>Get Started</h2>
     <p style="color: var(--text-secondary); max-width: 400px; margin: 0 auto;">Use the API directly or explore the documentation to integrate into your tools.</p>
     <div class="cta-buttons">
-        <a href="docs.html" class="btn btn-primary">📖 API Documentation</a>
-        <a href="https://github.com/Unknown-2829/Hitek_db_api-web" class="btn btn-outline" target="_blank">⭐ GitHub Repo</a>
+        <a href="docs.html" class="btn btn-primary ripple-effect">📖 API Documentation</a>
+        <a href="https://github.com/Unknown-2829/Hitek_db_api-web" class="btn btn-outline ripple-effect" target="_blank">⭐ GitHub Repo</a>
     </div>
 </section>
 

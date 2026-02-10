@@ -16,6 +16,12 @@
 
 <body>
 
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Particles Background -->
+    <canvas class="particles-canvas" id="particlesCanvas"></canvas>
+
     <!-- Navigation -->
     <nav class="navbar">
         <a href="index.html" class="nav-brand">Phantom<span>OSINT</span></a>
@@ -33,7 +39,7 @@
         <p class="subtitle">Public REST API for mobile number intelligence lookup.</p>
 
         <!-- Base URL -->
-        <div class="docs-section" id="get-api">
+        <div class="docs-section reveal" id="get-api">
             <h2>🌐 Base URL</h2>
             <pre>https://api.unknowns.app</pre>
             <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.5rem;">
@@ -236,6 +242,8 @@ python -m api.main</pre>
         <p>Phantom OSINT — <a href="https://github.com/Unknown-2829/Hitek_db_api-web" target="_blank">GitHub</a> · Built
             for OSINT research</p>
     </footer>
+
+    <script src="app.js"></script>
 
 </body>
 

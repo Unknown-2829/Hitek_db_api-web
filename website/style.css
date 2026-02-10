@@ -803,6 +803,198 @@ pre:hover {
     background: rgba(167, 139, 250, 0.04);
 }
 
+/* ── Toast Notifications ────────────────────────────────── */
+.toast-container {
+    position: fixed;
+    top: 5rem;
+    right: 1.5rem;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    pointer-events: none;
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.85rem 1.2rem;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    pointer-events: auto;
+    animation: toastIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    max-width: 380px;
+    overflow: hidden;
+    position: relative;
+}
+
+.toast::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: var(--accent);
+    animation: toastTimer 4s linear forwards;
+}
+
+.toast.toast-exit {
+    animation: toastOut 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.toast-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.toast-message {
+    flex: 1;
+    line-height: 1.4;
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0.2rem;
+    transition: var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.toast-close:hover {
+    color: var(--text-primary);
+}
+
+.toast-success {
+    border-color: rgba(52, 211, 153, 0.25);
+}
+
+.toast-success::after {
+    background: var(--success);
+}
+
+.toast-error {
+    border-color: rgba(248, 113, 113, 0.25);
+}
+
+.toast-error::after {
+    background: var(--danger);
+}
+
+.toast-warning {
+    border-color: rgba(251, 191, 36, 0.25);
+}
+
+.toast-warning::after {
+    background: var(--warning);
+}
+
+.toast-info {
+    border-color: rgba(167, 139, 250, 0.25);
+}
+
+.toast-info::after {
+    background: var(--accent);
+}
+
+@keyframes toastIn {
+    from { opacity: 0; transform: translateX(80px) scale(0.95); }
+    to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes toastOut {
+    from { opacity: 1; transform: translateX(0) scale(1); }
+    to { opacity: 0; transform: translateX(80px) scale(0.95); }
+}
+
+@keyframes toastTimer {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+
+/* ── Floating Particles ────────────────────────────────── */
+.particles-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ── Scroll Reveal ─────────────────────────────────────── */
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ── Ripple Effect ─────────────────────────────────────── */
+.ripple-effect {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple-effect .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(167, 139, 250, 0.3);
+    transform: scale(0);
+    animation: rippleAnim 0.6s ease-out;
+    pointer-events: none;
+}
+
+@keyframes rippleAnim {
+    to { transform: scale(4); opacity: 0; }
+}
+
+/* ── Typewriter Cursor ─────────────────────────────────── */
+.typewriter-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    background: var(--accent);
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    animation: cursorBlink 0.8s step-end infinite;
+}
+
+@keyframes cursorBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* ── Shimmer on Hover ──────────────────────────────────── */
+.feature-card .feature-icon {
+    transition: var(--transition);
+}
+
+.feature-card:hover .feature-icon {
+    animation: iconFloat 0.6s ease-in-out;
+}
+
+@keyframes iconFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
 /* ── Mobile Menu ────────────────────────────────────────── */
 .menu-toggle {
     display: none;
@@ -855,4 +1047,6 @@ pre:hover {
     .results-section { padding: 0 1.2rem 3rem; }
     .features { padding: 2rem 1.2rem; }
     .docs-page { padding: 5rem 1.2rem 3rem; }
+    .toast-container { right: 0.8rem; left: 0.8rem; top: 4.5rem; }
+    .toast { max-width: 100%; }
 }
