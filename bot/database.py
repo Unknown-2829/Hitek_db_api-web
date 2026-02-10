@@ -85,74 +85,65 @@ class DatabaseManager:
             rows = await cursor.fetchall()
             return [dict(row) for row in rows]
 
-    @retry_on_lock
-    async def search_by_alt_mobile(self, mobile: str) -> list[dict[str, Any]]:
-        """Search alt_mobile column for linked numbers."""
-        query = "SELECT * FROM users WHERE alt_mobile = ? LIMIT ?"
-        async with self.conn.execute(query, (mobile, MAX_RESULTS)) as cursor:
-            rows = await cursor.fetchall()
-            return [dict(row) for row in rows]
-
     async def deep_search(self, seed_mobile: str, max_depth: int = 3) -> dict[str, Any]:
         """
-        BFS deep-link search: follow mobile ↔ alt_mobile chains.
-        Returns a consolidated profile with all linked numbers, records, and addresses.
+        BFS deep-link search using ONLY the indexed mobile column.
         
         Flow:
-        1. Search seed_mobile in both mobile & alt_mobile columns
-        2. Collect all alt_mobile & mobile numbers from results
-        3. Search those new numbers (BFS) up to max_depth levels
-        4. Return consolidated profile
+        1. Search seed_mobile via indexed mobile column (fast)
+        2. Extract alt_mobile values from results
+        3. Search those alt numbers via mobile column (fast)
+        4. Repeat up to max_depth levels
+        5. Return consolidated profile
+        
+        Every query hits idx_mobile → O(log n) per hop.
         """
-        visited_numbers: set[str] = set()
+        visited: set[str] = set()
         queue: list[str] = [seed_mobile]
         all_rows: list[dict[str, Any]] = []
-        seen_rowids: set[int] = set()  # avoid duplicate rows
+        seen_keys: set[int] = set()
 
         depth = 0
         while queue and depth < max_depth:
             next_queue: list[str] = []
 
             for number in queue:
-                if number in visited_numbers:
+                if number in visited:
                     continue
-                visited_numbers.add(number)
+                visited.add(number)
 
-                # Search both mobile and alt_mobile columns
-                rows_mobile = await self.search_by_mobile(number)
-                rows_alt = await self.search_by_alt_mobile(number)
+                # Only use indexed mobile column — O(log n)
+                rows = await self.search_by_mobile(number)
 
-                for row in rows_mobile + rows_alt:
-                    row_id = row.get("rowid") or id(row)
-                    # Use a content-based key to deduplicate
-                    row_key = (
+                for row in rows:
+                    # Deduplicate by content
+                    row_key = hash((
                         row.get("mobile", ""),
                         row.get("name", ""),
                         row.get("fname", ""),
                         row.get("address", ""),
-                    )
-                    row_hash = hash(row_key)
-                    if row_hash not in seen_rowids:
-                        seen_rowids.add(row_hash)
-                        all_rows.append(row)
+                    ))
+                    if row_key in seen_keys:
+                        continue
+                    seen_keys.add(row_key)
+                    all_rows.append(row)
 
-                    # Collect new numbers to search
-                    mob = str(row.get("mobile", "")).strip()
+                    # Extract alt_mobile → queue for next hop
                     alt = str(row.get("alt_mobile", "")).strip()
-
-                    if mob and mob not in visited_numbers and len(mob) == 10:
-                        next_queue.append(mob)
-                    if alt and alt not in visited_numbers and len(alt) >= 10:
-                        # Clean alt_mobile if it has prefix
-                        alt_clean = alt[-10:] if len(alt) > 10 else alt
-                        if alt_clean not in visited_numbers:
-                            next_queue.append(alt_clean)
+                    if alt and alt not in ("None", "N/A", ""):
+                        # Clean prefix if present
+                        alt_digits = alt[-10:] if len(alt) > 10 else alt
+                        if (
+                            len(alt_digits) == 10
+                            and alt_digits[0] in "6789"
+                            and alt_digits not in visited
+                        ):
+                            next_queue.append(alt_digits)
 
             queue = next_queue
             depth += 1
 
-        # Build consolidated profile
-        return self._build_profile(seed_mobile, all_rows, visited_numbers)
+        return self._build_profile(seed_mobile, all_rows, visited)
 
     def _build_profile(
         self,
