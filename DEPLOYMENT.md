@@ -90,18 +90,51 @@ Since your API is HTTP (IP only), you must tell the frontend where to look.
 
 ---
 
-## ⚠️ Critical: Mixed Content Warning
-Cloudflare Pages uses **HTTPS** (Secure).
-Your IP API is **HTTP** (Not Secure).
+## 🌐 Part 3: Domain Setup (unknowns.app)
 
-Browsers will block the request ("Mixed Content Error").
+Since you own **unknowns.app**, let's set it up properly for HTTPS.
 
-**Solution:**
-1.  **Buy a domain** (e.g., `hitek-api.com`).
-2.  **Point it** to `20.204.232.146`.
-3.  **Run Certbot** on VPS:
-    ```bash
-    apt install certbot python3-certbot-nginx -y
-    certbot --nginx -d hitek-api.com
-    ```
-4.  Update `website/app.js` to `https://hitek-api.com`.
+### 1. Cloudflare DNS Settings
+Go to Cloudflare Dashboard > **DNS** for `unknowns.app`. Add these records:
+
+| Type | Name | Content (Value) | Proxy Status | Purpose |
+|------|------|-----------------|--------------|---------|
+| **A** | `api` | `20.204.232.146` | **DNS Only** (Grey Cloud) | For API (VPS) |
+| **CNAME**| `@` | `hitek-osint.pages.dev` | **Proxied** (Orange Cloud) | For Website |
+| **CNAME**| `www` | `hitek-osint.pages.dev` | **Proxied** (Orange Cloud) | For Website |
+
+*(Replace `hitek-osint.pages.dev` with your actual Cloudflare Pages URL)*
+
+### 2. Setup SSL on VPS (for API)
+Now that `api.unknowns.app` points to your VPS, let's enable HTTPS.
+
+SSH into VPS:
+```bash
+# Install Certbot
+apt install certbot python3-certbot-nginx -y
+
+# Edit Nginx setup
+nano /etc/nginx/sites-available/hitek_api
+# Change 'server_name' to: api.unknowns.app
+```
+
+Get the certificate:
+```bash
+certbot --nginx -d api.unknowns.app
+systemctl restart nginx
+```
+
+✅ **API is now SECURE:** `https://api.unknowns.app`
+
+### 3. Final Frontend Update
+Now update `website/app.js` to use the secure domain:
+
+```javascript
+const API_BASE = 'https://api.unknowns.app';
+```
+
+Commit and push. Cloudflare will redeploy automatically.
+🚀 **Result:**
+- Website: `https://unknowns.app`
+- API: `https://api.unknowns.app`
+- **No Mixed Content Errors!**
