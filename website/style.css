@@ -1041,12 +1041,64 @@ pre:hover {
 
     .hero { padding: 5rem 1.2rem 3rem; }
     .hero h1 { font-size: 2.2rem; }
+    .hero p { font-size: 0.95rem; margin-bottom: 2rem; }
     .hero-glow { width: 300px; height: 300px; }
+    .hero-badge { font-size: 0.7rem; padding: 0.4rem 1rem; }
+
     .search-container { max-width: 100%; }
+    .search-box input { font-size: 0.88rem; padding: 0.85rem 0.7rem; }
+    .search-box button { padding: 0.85rem 1.1rem; font-size: 0.8rem; }
+
     .stats-bar { gap: 1.5rem; }
+    .stat-value { font-size: 1.2rem; }
+    .stat-label { font-size: 0.65rem; }
+
     .results-section { padding: 0 1.2rem 3rem; }
+    .results-header { flex-direction: column; gap: 0.4rem; align-items: flex-start; }
+    .results-body { padding: 1rem; }
+    .result-value { font-size: 0.85rem; }
+
     .features { padding: 2rem 1.2rem; }
+    .features h2 { font-size: 1.4rem; margin-bottom: 1.8rem; }
+    .features-grid { grid-template-columns: 1fr; gap: 0.8rem; }
+    .feature-card { padding: 1.2rem; }
+
+    .cta-section { padding: 3rem 1.2rem; }
+    .cta-section h2 { font-size: 1.4rem; }
+    .cta-buttons { flex-direction: column; align-items: center; gap: 0.7rem; }
+    .cta-buttons .btn { width: 100%; max-width: 300px; justify-content: center; }
+
     .docs-page { padding: 5rem 1.2rem 3rem; }
+    .docs-page h1 { font-size: 1.6rem; }
+    .endpoint-card { padding: 1rem; }
+    pre { font-size: 0.76rem; padding: 0.8rem; }
+    .param-table th, .param-table td { padding: 0.5rem 0.4rem; font-size: 0.75rem; }
+
+    .footer { padding: 1.5rem 1rem; font-size: 0.72rem; }
+
     .toast-container { right: 0.8rem; left: 0.8rem; top: 4.5rem; }
-    .toast { max-width: 100%; }
+    .toast { max-width: 100%; font-size: 0.78rem; padding: 0.75rem 1rem; }
+}
+
+@media (max-width: 380px) {
+    .hero { padding: 4.5rem 0.8rem 2.5rem; }
+    .hero h1 { font-size: 1.8rem; }
+    .hero p { font-size: 0.88rem; }
+    .hero-badge { font-size: 0.65rem; }
+
+    .search-box { flex-direction: column; border-radius: var(--radius-sm); }
+    .search-box input { padding: 0.85rem; text-align: center; }
+    .search-box button { width: 100%; padding: 0.8rem; border-radius: 0; }
+    .search-icon { display: none; }
+
+    .stats-bar { gap: 1rem; }
+    .stat-value { font-size: 1rem; }
+
+    .features-grid { gap: 0.6rem; }
+    .feature-card { padding: 1rem; }
+    .feature-card h3 { font-size: 0.9rem; }
+    .feature-card p { font-size: 0.78rem; }
+
+    .results-section { padding: 0 0.8rem 2rem; }
+    .docs-page { padding: 4.5rem 0.8rem 2rem; }
 }
