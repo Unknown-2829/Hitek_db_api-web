@@ -1,6 +1,6 @@
 # 🚀 Deployment Guide
 
-This guide covers how to host the **HiTek OSINT** API on a VPS and the frontend on **Cloudflare Pages**.
+This guide covers how to host the **Phantom OSINT** API on a VPS and the frontend on **Cloudflare Pages**.
 
 ---
 

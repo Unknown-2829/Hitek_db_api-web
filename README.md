@@ -1,4 +1,4 @@
-# HiTek DB — API & Web
+# Phantom OSINT DB — API & Web
 
 Public REST API and web interface for mobile number intelligence lookup against a **1.78 billion record** database.
 

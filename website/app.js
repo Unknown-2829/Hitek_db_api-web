@@ -1,5 +1,5 @@
 /**
- * HiTek OSINT — Frontend Logic
+ * Phantom OSINT — Frontend Logic
  * Handles search, API calls, and result rendering.
  */
 

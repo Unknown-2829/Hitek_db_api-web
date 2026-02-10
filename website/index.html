@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HiTek OSINT — Mobile Intelligence Lookup</title>
+    <title>Phantom OSINT — Mobile Intelligence Lookup</title>
     <meta name="description" content="Professional OSINT mobile number lookup API. Deep-link intelligence across 1.78 billion records.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -13,7 +13,7 @@
 
 <!-- Navigation -->
 <nav class="navbar">
-    <a href="index.html" class="nav-brand">HiTek<span>OSINT</span></a>
+    <a href="index.html" class="nav-brand">Phantom<span>OSINT</span></a>
     <button class="menu-toggle" onclick="document.querySelector('.nav-links').classList.toggle('open')">☰</button>
     <ul class="nav-links">
         <li><a href="index.html" class="active">Search</a></li>
@@ -25,16 +25,22 @@
 
 <!-- Hero -->
 <section class="hero">
+    <div class="hero-glow"></div>
     <div class="hero-badge">⚡ 1.78 BILLION RECORDS</div>
-    <h1>HiTek OSINT</h1>
+    <h1>Phantom OSINT</h1>
     <p>Deep-link mobile intelligence. Search any Indian mobile number and discover all linked identities, addresses, and connections.</p>
 
     <!-- Search -->
     <div class="search-container">
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="Enter 10-digit mobile..." maxlength="15" autocomplete="off">
-            <button id="searchBtn" onclick="doSearch()">SEARCH</button>
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Enter 10-digit mobile number..." maxlength="15" autocomplete="off">
+            <button id="searchBtn" onclick="doSearch()">
+                <span class="btn-text">SEARCH</span>
+                <span class="btn-loader"></span>
+            </button>
         </div>
+        <div class="search-hint">Try: +91 98765 43210 or 9876543210</div>
     </div>
 
     <!-- Stats -->
@@ -71,14 +77,14 @@
         <div class="results-body" id="resultsBody"></div>
         <div class="results-footer">
             <span id="resultsStats"></span>
-            <span>⚡ HiTek OSINT</span>
+            <span>👻 Phantom OSINT</span>
         </div>
     </div>
 </section>
 
 <!-- Features -->
 <section class="features">
-    <h2>Why HiTek OSINT?</h2>
+    <h2>Why Phantom OSINT?</h2>
     <div class="features-grid">
         <div class="feature-card">
             <div class="feature-icon">🔍</div>
@@ -125,7 +131,7 @@
 
 <!-- Footer -->
 <footer class="footer">
-    <p>HiTek OSINT — <a href="https://github.com/Unknown-2829/Hitek_db_api-web" target="_blank">GitHub</a> · Built for OSINT research</p>
+    <p>Phantom OSINT — <a href="https://github.com/Unknown-2829/Hitek_db_api-web" target="_blank">GitHub</a> · Built for OSINT research</p>
 </footer>
 
 <script src="app.js"></script>

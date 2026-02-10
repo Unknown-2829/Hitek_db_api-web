@@ -1,5 +1,5 @@
 """
-HiTek DB API — FastAPI Server
+Phantom OSINT DB API — FastAPI Server
 Public REST API for mobile number lookup against 1.78B record database.
 """
 
@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     """Startup/shutdown: connect and close the database."""
     await db.connect()
-    logger.info("⚡ HiTek DB API is ready!")
+    logger.info("⚡ Phantom OSINT DB API is ready!")
     yield
     await db.close()
     logger.info("API shut down.")
@@ -35,7 +35,7 @@ async def lifespan(app: FastAPI):
 
 # ── App ────────────────────────────────────────────────────────────
 app = FastAPI(
-    title="HiTek DB API",
+    title="Phantom OSINT DB API",
     description="Public API for mobile number lookup — 1.78B records, deep-link search.",
     version="1.0.0",
     lifespan=lifespan,
@@ -77,7 +77,7 @@ async def root():
     """API status."""
     return {
         "status": "online",
-        "name": "HiTek DB API",
+        "name": "Phantom OSINT DB API",
         "version": "1.0.0",
         "records": "1.78B",
         "endpoints": {

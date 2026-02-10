@@ -1,5 +1,5 @@
 """
-HiTek DB API — Configuration
+Phantom OSINT DB API — Configuration
 Loads settings from environment variables or .env file.
 """
 
