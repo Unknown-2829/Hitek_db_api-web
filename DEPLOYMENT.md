@@ -100,8 +100,7 @@ Go to Cloudflare Dashboard > **DNS** for `unknowns.app`. Add these records:
 | Type | Name | Content (Value) | Proxy Status | Purpose |
 |------|------|-----------------|--------------|---------|
 | **A** | `api` | `20.204.232.146` | **DNS Only** (Grey Cloud) | For API (VPS) |
-| **CNAME**| `@` | `hitek-osint.pages.dev` | **Proxied** (Orange Cloud) | For Website |
-| **CNAME**| `www` | `hitek-osint.pages.dev` | **Proxied** (Orange Cloud) | For Website |
+| **CNAME**| `osint` | `hitek-osint.pages.dev` | **Proxied** (Orange Cloud) | For Website |
 
 *(Replace `hitek-osint.pages.dev` with your actual Cloudflare Pages URL)*
 
