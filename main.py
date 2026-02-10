@@ -10,6 +10,7 @@ import sys
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
+from aiogram.types import BotCommand, BotCommandScopeAllPrivateChats
 
 from bot.config import BOT_TOKEN, ADMIN_IDS, RATE_LIMIT, LOG_FILE, validate_config
 from bot.database import db
@@ -64,14 +65,27 @@ async def on_startup(bot: Bot):
     # Load persisted state
     state.load_state()
 
+    # Register bot commands with Telegram menu
+    user_commands = [
+        BotCommand(command="start", description="🏠 Start the bot"),
+        BotCommand(command="search", description="🔍 Search by mobile number"),
+        BotCommand(command="help", description="📖 Show all commands"),
+        BotCommand(command="stats", description="📊 Bot statistics"),
+    ]
+    await bot.set_my_commands(user_commands, scope=BotCommandScopeAllPrivateChats())
+    logger.info("✅ Bot commands registered with Telegram.")
+
     # Notify admins
     for admin_id in ADMIN_IDS:
         try:
             await bot.send_message(
                 admin_id,
-                "⚡ <b>HiTek DB Bot is now ONLINE!</b>\n"
-                f"🔒 Mode: <code>{state.bot_mode.upper()}</code>\n"
-                f"📊 Tracked users: <code>{user_store.user_count}</code>\n\n"
+                "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                "     ⚡ <b>HiTek DB Bot ONLINE</b> ⚡\n"
+                "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+                f"  🔒 Mode   : <code>{state.bot_mode.upper()}</code>\n"
+                f"  👥 Users  : <code>{user_store.user_count}</code>\n"
+                f"  ⏱ Limit  : <code>{RATE_LIMIT}s</code>\n\n"
                 "Send /admin for command list.",
                 parse_mode="HTML",
             )

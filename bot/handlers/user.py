@@ -183,8 +183,11 @@ async def _do_mobile_search(message: Message, raw_input: str):
     )
 
     try:
+        t_start = time.perf_counter()
         results = await db.search_by_mobile(mobile)
-        text = format_results(results, mobile, "MOBILE")
+        elapsed_ms = int((time.perf_counter() - t_start) * 1000)
+
+        text = format_results(results, mobile, "MOBILE", elapsed_ms=elapsed_ms)
         if prefix_warning:
             text += prefix_warning
         _log_search(message.from_user.id, message.from_user.username, mobile, len(results))

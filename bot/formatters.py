@@ -1,6 +1,7 @@
 """
 Result Formatters
-Clean address data and format DB results in OSINT/Hacker monospace style.
+Professional OSINT-style output — clean, compact, easy to copy.
+Renders perfectly on all Telegram clients.
 """
 
 import re
@@ -9,27 +10,14 @@ from typing import Any
 
 
 def clean_address(raw: str | None) -> str:
-    """
-    Clean garbage from address field.
-    - Strip leading '!'
-    - Replace '!!' and '!' with ', '
-    - Collapse multiple commas/spaces
-    - Strip trailing commas
-    """
+    """Clean garbage from address field."""
     if not raw:
         return "N/A"
-
     addr = raw.strip()
-    # Replace !! with comma separator
-    addr = addr.replace("!!", ", ")
-    addr = addr.replace("!", ", ")
-    # Remove leading commas/spaces
+    addr = addr.replace("!!", ", ").replace("!", ", ")
     addr = addr.lstrip(", ")
-    # Collapse multiple commas and spaces
     addr = re.sub(r"[,\s]{2,}", ", ", addr)
-    # Remove trailing comma
     addr = addr.rstrip(", ").strip()
-
     return addr if addr else "N/A"
 
 
@@ -41,134 +29,138 @@ def _safe(value: Any) -> str:
     return escape(s) if s else "N/A"
 
 
-def format_single_result(row: dict[str, Any], index: int = 0) -> str:
-    """Format a single DB row into OSINT-style monospace block."""
-
+def format_single_result(row: dict[str, Any], index: int = 0, total: int = 0) -> str:
+    """Format a single DB row — professional OSINT data card."""
     mobile = _safe(row.get("mobile"))
     name = _safe(row.get("name"))
     fname = _safe(row.get("fname"))
     email = _safe(row.get("email"))
-    address = clean_address(row.get("address"))
-    address = escape(address)
+    address = escape(clean_address(row.get("address")))
     circle = _safe(row.get("circle"))
     op_id = _safe(row.get("operator_id"))
     alt_mobile = _safe(row.get("alt_mobile"))
 
-    lines = [
-        f"┌─────────────────────────────────┐",
-        f"│  📱 MOBILE  ➜  <code>{mobile}</code>",
-        f"│  👤 NAME    ➜  {name}",
-        f"│  👨 FATHER  ➜  {fname}",
-        f"│  📧 EMAIL   ➜  <code>{email}</code>",
-        f"│  🏠 ADDR    ➜  {address}",
-        f"│  📡 CIRCLE  ➜  {circle}",
-        f"│  🆔 ID      ➜  <code>{op_id}</code>",
-    ]
+    header = f"▓▓▓ <b>RECORD {index}/{total}</b> ▓▓▓\n" if index else ""
+
+    block = (
+        f"{header}"
+        f"<code>┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</code>\n"
+        f"<code>┃</code> 📱  <code>{mobile}</code>\n"
+        f"<code>┃</code> 👤  {name}\n"
+        f"<code>┃</code> 👨  {fname}\n"
+    )
+
+    if email and email != "N/A":
+        block += f"<code>┃</code> 📧  <code>{email}</code>\n"
+
+    block += (
+        f"<code>┃</code> 📍  {address}\n"
+        f"<code>┃</code> 📡  {circle}\n"
+        f"<code>┃</code> 🆔  <code>{op_id}</code>\n"
+    )
 
     if alt_mobile and alt_mobile != "N/A":
-        lines.append(f"│  📞 ALT     ➜  <code>{alt_mobile}</code>")
+        block += f"<code>┃</code> 📞  <code>{alt_mobile}</code>\n"
 
-    lines.append(f"└─────────────────────────────────┘")
+    block += f"<code>┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</code>"
 
-    return "\n".join(lines)
+    return block
 
 
-def format_results(rows: list[dict[str, Any]], query: str, search_type: str) -> str:
-    """Format multiple results with header and count."""
+def format_results(rows: list[dict[str, Any]], query: str, search_type: str, elapsed_ms: int = 0) -> str:
+    """Format search results — professional OSINT output."""
+    time_str = f"  ⏱ <code>{elapsed_ms}ms</code>" if elapsed_ms else ""
 
     if not rows:
         return (
-            "<pre>"
-            "╔══════════════════════════════════╗\n"
-            "║   ❌  NO RESULTS FOUND           ║\n"
-            "╚══════════════════════════════════╝"
-            "</pre>\n\n"
-            f"🔍 Query: <code>{escape(query)}</code>\n"
-            f"📂 Type: {escape(search_type)}"
+            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n"
+            "  ❌ <b>TARGET NOT FOUND</b>\n"
+            "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n\n"
+            f"  🎯 Target : <code>{escape(query)}</code>\n"
+            f"  📂 Method : {escape(search_type)}{time_str}\n\n"
+            "<i>Verify the number and try again.</i>"
         )
 
     count = len(rows)
+
     header = (
-        "<pre>"
-        "╔══════════════════════════════════╗\n"
-        f"║  🔎 FOUND: {count} RESULT{'S' if count > 1 else ''}               ║\n"
-        "╠══════════════════════════════════╣\n"
-        f"║  🔍 QUERY : {escape(query):<20s} ║\n"
-        f"║  📂 TYPE  : {escape(search_type):<20s} ║\n"
-        "╚══════════════════════════════════╝"
-        "</pre>\n"
+        "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n"
+        f"  🎯 <b>TARGET LOCATED — {count} HIT{'S' if count > 1 else ''}</b>\n"
+        "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n\n"
+        f"  🔍 Query  : <code>{escape(query)}</code>\n"
+        f"  📂 Method : {escape(search_type)}{time_str}\n\n"
     )
 
     result_blocks = []
     for i, row in enumerate(rows, 1):
-        block = f"\n<b>━━━ Result {i}/{count} ━━━</b>\n"
-        block += f"<pre>{format_single_result(row, i)}</pre>"
-        result_blocks.append(block)
+        result_blocks.append(format_single_result(row, i, count))
 
-    footer = f"\n\n<i>⚡ Powered by HiTek DB | {count} record{'s' if count > 1 else ''} found</i>"
+    footer = (
+        f"\n\n<code>{'─' * 31}</code>\n"
+        f"📊 <b>{count}</b> record{'s' if count > 1 else ''}"
+        f" | ⚡ <b>HiTek OSINT</b>"
+    )
 
-    return header + "\n".join(result_blocks) + footer
+    return header + "\n\n".join(result_blocks) + footer
 
 
 def format_welcome() -> str:
-    """Welcome message for /start command."""
+    """Welcome message — professional OSINT tool branding."""
     return (
-        "<pre>"
-        "╔══════════════════════════════════════╗\n"
-        "║                                      ║\n"
-        "║    ⚡ HiTek Database Bot ⚡           ║\n"
-        "║    ━━━━━━━━━━━━━━━━━━━━━             ║\n"
-        "║    🔍 1.78 Billion Records            ║\n"
-        "║    ⚡ Instant Mobile Lookup            ║\n"
-        "║    🛡️ Secure &amp; Private                ║\n"
-        "║                                      ║\n"
-        "╚══════════════════════════════════════╝"
-        "</pre>\n\n"
-        "<b>📖 How to Search:</b>\n\n"
-        "  📱 <code>/search 9876543210</code>\n"
-        "  💬 Or just send a <b>10-digit number</b> directly!\n\n"
-        "<b>✅ Accepted formats:</b>\n"
-        "  <code>9876543210</code>  — 10 digits (best)\n"
-        "  <code>+91 98765 43210</code> — auto-cleaned\n"
-        "  <code>09876543210</code> — auto-cleaned\n\n"
-        "<b>📊 Other Commands:</b>\n"
-        "  /help  — Show all commands\n"
-        "  /stats — Bot statistics\n\n"
-        "<i>⚠️ Rate limit: 1 search every 2 seconds</i>"
+        "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n"
+        "       ⚡ <b>HiTek OSINT</b> ⚡\n"
+        "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n\n"
+        "  📊  <b>1.78B</b> Records Indexed\n"
+        "  ⚡  Instant Mobile Lookup\n"
+        "  🔒  Encrypted &amp; Secure\n\n"
+        "<code>─────────────────────────────────</code>\n\n"
+        "📱 <b>Quick Start:</b>\n"
+        "  ▸ Send any <b>10-digit mobile</b>\n"
+        "  ▸ <code>/search 9876543210</code>\n\n"
+        "📋 <b>Commands:</b>\n"
+        "  /help   — Command list\n"
+        "  /stats  — Statistics"
     )
 
 
 def format_help() -> str:
-    """Help message with all user commands."""
+    """Help — compact command reference."""
     return (
-        "<b>📖 User Commands:</b>\n\n"
-        "  /start              — Welcome message\n"
-        "  /help               — This help menu\n"
-        "  /search &lt;number&gt;   — Search by mobile\n"
-        "  /stats              — Bot statistics\n\n"
-        "<b>💡 Tip:</b> Just send a 10-digit mobile number directly!\n\n"
-        "<b>📱 Accepted formats:</b>\n"
-        "  <code>9876543210</code> ✅\n"
-        "  <code>+91 98765 43210</code> ✅ (auto-cleaned)\n"
-        "  <code>091-9876543210</code> ✅ (auto-cleaned)"
+        "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n"
+        "        📖 <b>Command List</b>\n"
+        "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n\n"
+        "<b>🔍 Search:</b>\n"
+        "  /search <code>&lt;number&gt;</code>\n"
+        "  <i>Or just type a 10-digit number</i>\n\n"
+        "<b>📊 Info:</b>\n"
+        "  /stats — Bot statistics\n"
+        "  /help  — This menu\n\n"
+        "<b>📱 Input:</b>\n"
+        "  ✅ <code>9876543210</code>\n"
+        "  🔄 <code>+91 98765 43210</code> → auto-fix\n"
+        "  🔄 <code>09876543210</code> → auto-fix"
     )
 
 
 def format_admin_help() -> str:
-    """Admin command help."""
+    """Admin panel — organized command reference."""
     return (
-        "<b>🔐 Admin Commands:</b>\n\n"
-        "  /admin           — This admin help menu\n"
-        "  /logs            — Download search log file\n"
-        "  /dbstats         — Database statistics\n"
-        "  /alert &lt;msg&gt;     — Broadcast to all users\n"
-        "  /clearlog        — Clear search log file\n"
-        "  /setmode &lt;mode&gt;  — Set bot mode (public/private)\n"
-        "  /getmode         — Show current bot mode\n"
-        "  /users           — Show tracked user count\n"
-        "  /ban &lt;user_id&gt;   — Ban a user\n"
-        "  /unban &lt;user_id&gt; — Unban a user\n"
-        "  /banlist         — Show banned users\n"
+        "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n"
+        "        🔐 <b>Admin Panel</b>\n"
+        "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n\n"
+        "<b>⚙️ System:</b>\n"
+        "  /setmode <code>&lt;public|private&gt;</code>\n"
+        "  /getmode — Current mode\n\n"
+        "<b>📝 Logs:</b>\n"
+        "  /logs     — Download log\n"
+        "  /clearlog — Clear log\n\n"
+        "<b>📊 Stats:</b>\n"
+        "  /dbstats — Database info\n"
+        "  /users   — User count\n\n"
+        "<b>📡 Broadcast:</b>\n"
+        "  /alert <code>&lt;msg&gt;</code>\n\n"
+        "<b>🚫 Moderation:</b>\n"
+        "  /ban <code>&lt;id&gt;</code>  · /unban <code>&lt;id&gt;</code>  · /banlist"
     )
 
 
@@ -178,16 +170,29 @@ def format_stats(
     bot_mode: str,
     uptime: str,
 ) -> str:
-    """Format bot statistics."""
+    """Bot statistics."""
+    mode_emoji = "🌐" if bot_mode.lower() == "public" else "🔒"
     return (
-        "<pre>"
-        "╔══════════════════════════════════╗\n"
-        "║       📊 BOT STATISTICS          ║\n"
-        "╠══════════════════════════════════╣\n"
-        f"║  🔍 Searches : {total_searches:<17} ║\n"
-        f"║  👥 Users    : {total_users:<17} ║\n"
-        f"║  🔒 Mode     : {bot_mode.upper():<17} ║\n"
-        f"║  ⏱️ Uptime   : {uptime:<17} ║\n"
-        "╚══════════════════════════════════╝"
-        "</pre>"
+        "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n"
+        "       📊 <b>Statistics</b>\n"
+        "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n\n"
+        f"  🔍  Searches  :  <code>{total_searches:,}</code>\n"
+        f"  👥  Users     :  <code>{total_users:,}</code>\n"
+        f"  {mode_emoji}  Mode      :  <code>{bot_mode.upper()}</code>\n"
+        f"  ⏱  Uptime    :  <code>{uptime}</code>"
+    )
+
+
+def format_dbstats(row_count: int, size_str: str) -> str:
+    """Database statistics."""
+    return (
+        "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n"
+        "       💾 <b>Database Info</b>\n"
+        "▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓\n\n"
+        f"  📊  Rows    :  <code>{row_count:,}</code>\n"
+        f"  💽  Size    :  <code>{size_str}</code>\n"
+        f"  📁  Path    :  <code>/data/users.db</code>\n"
+        f"  🔧  Journal :  <code>WAL</code>\n"
+        f"  💾  Cache   :  <code>64MB</code>\n"
+        f"  🗺  MMap    :  <code>2GB</code>"
     )

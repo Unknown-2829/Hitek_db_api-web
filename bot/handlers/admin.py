@@ -14,7 +14,7 @@ from aiogram.filters import Command
 
 from bot.config import ADMIN_IDS, LOG_FILE
 from bot.database import db
-from bot.formatters import format_admin_help
+from bot.formatters import format_admin_help, format_dbstats
 from bot.user_store import user_store
 import bot.state as state
 
@@ -68,18 +68,7 @@ async def cmd_dbstats(message: Message):
         db_size = await db.get_db_size()
         size_str = _format_size(db_size)
 
-        text = (
-            "<pre>"
-            "╔══════════════════════════════════╗\n"
-            "║      💾 DATABASE STATISTICS       ║\n"
-            "╠══════════════════════════════════╣\n"
-            f"║  📊 Rows (approx) : {row_count:>12,} ║\n"
-            f"║  💽 DB Size       : {size_str:>12} ║\n"
-            f"║  📁 DB Path       : /data/       ║\n"
-            f"║  🔧 Mode          : WAL          ║\n"
-            "╚══════════════════════════════════╝"
-            "</pre>"
-        )
+        text = format_dbstats(row_count, size_str)
         await processing.edit_text(text, parse_mode="HTML")
     except Exception as e:
         logger.error(f"DB stats error: {e}")
