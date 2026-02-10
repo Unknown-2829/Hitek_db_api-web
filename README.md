@@ -30,7 +30,7 @@ Look up a mobile number with deep-link analysis.
 
 **Example:**
 ```bash
-curl "http://your-server:8000/api/lookup?number=9876543210"
+curl "https://api.unknowns.app/api/lookup?number=9876543210"
 ```
 
 **Response:**
